@@ -1,18 +1,24 @@
-import { Params } from "next/dist/server/request/params";
-import MovieInfo from "../../../../components/movie-info";
+import MovieInfo, { getMovie } from "../../../../components/movie-info";
 import MovieVideos from "../../../../components/movie-videos";
 import { Suspense } from "react";
 
-export default async function MovieDetail({
-  params,
-}: {
+interface IParams {
   params: Promise<{ id: string }>;
-}) {
+}
+
+export async function generateMetadata({ params }: IParams) {
+  const { id } = await params;
+  const movie = await getMovie(id);
+  return {
+    title: movie.title,
+  };
+}
+
+export default async function MovieDetailPage({ params }: IParams) {
   const { id } = await params;
 
   return (
     <div>
-      <h2>Movie Detail Page</h2>
       <Suspense fallback={<h1>Loading Movie Info</h1>}>
         <MovieInfo id={id} />
       </Suspense>
